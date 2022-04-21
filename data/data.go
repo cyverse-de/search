@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	"github.com/cyverse-de/querydsl"
 	"github.com/cyverse-de/querydsl/clause/created"
@@ -27,6 +28,8 @@ import (
 	"github.com/cyverse-de/search/elasticsearch"
 	"gopkg.in/olivere/elastic.v5"
 )
+
+var httpClient = http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 
 var qd = querydsl.New()
 
@@ -91,14 +94,12 @@ func (r *QueryResponder) logAndOutputErr(err error) {
 func (r *QueryResponder) getUserGroups() ([]string, *http.Response, error) {
 	// XXX: go 1.9: use url.PathEscape
 	userinfourl := fmt.Sprintf("%s/users/%s/groups?user=%s", r.cfg.GetString("data_info.base"), r.user, url.QueryEscape(r.user))
-	req, err := http.NewRequest("GET", userinfourl, nil)
+	req, err := http.NewRequestWithContext(r.ctx, "GET", userinfourl, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	req = req.WithContext(r.ctx)
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -187,9 +188,7 @@ func (r *QueryResponder) outputSearchResults(res *elastic.SearchResult) {
 // GetSearchHandler returns a function which performs searches after translating an input query
 func GetSearchHandler(cfg *viper.Viper, e *elasticsearch.Elasticer, log *logrus.Entry) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
+		ctx := r.Context()
 
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		out := json.NewEncoder(w)
