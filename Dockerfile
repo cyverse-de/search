@@ -2,10 +2,14 @@ FROM golang:1.18-alpine
 
 RUN apk add --no-cache git
 
-COPY . /go/src/github.com/cyverse-de/search
-WORKDIR /go/src/github.com/cyverse-de/search
+WORKDIR /build
+
+COPY . .
 ENV CGO_ENABLED=0
-RUN go install -v github.com/cyverse-de/search
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+RUN go install -v ./...
 
 ENTRYPOINT ["search"]
 CMD ["--help"]
