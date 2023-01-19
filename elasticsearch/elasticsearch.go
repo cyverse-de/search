@@ -3,6 +3,7 @@ package elasticsearch
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -21,7 +22,12 @@ var httpClient = http.Client{Transport: otelhttp.NewTransport(http.DefaultTransp
 // NewElasticer returns a pointer to an Elasticer instance that has already tested its connection
 // by making a WaitForStatus call to the configured Elasticsearch cluster
 func NewElasticer(elasticsearchBase string, user string, password string, elasticsearchIndex string) (*Elasticer, error) {
-	c, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(elasticsearchBase), elastic.SetBasicAuth(user, password), elastic.SetHttpClient(&httpClient))
+	c, err := elastic.NewClient(
+		elastic.SetSniff(false),
+		elastic.SetURL(elasticsearchBase),
+		elastic.SetBasicAuth(user, password),
+		elastic.SetHealthcheckTimeoutStartup(30*time.Second),
+		elastic.SetHttpClient(&httpClient))
 
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to create elastic client")
