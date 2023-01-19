@@ -27,7 +27,7 @@ func NewElasticer(elasticsearchBase string, user string, password string, elasti
 		return nil, errors.Wrap(err, "Failed to create elastic client")
 	}
 
-	wait := "10s"
+	wait := "90s"
 	err = c.WaitForYellowStatus(wait)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Cluster did not report yellow or better status within %s", wait)
