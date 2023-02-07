@@ -69,6 +69,14 @@ func main() {
 	}
 	defer e.Close()
 
+	// Check in a goroutine so the service can start up & respond to health checks sooner
+	go func(e *elasticsearch.Elasticer) {
+		err := e.Check()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(e)
+
 	r := newRouter(e)
 	listenPortSpec := ":" + "60000"
 	log.Infof("Listening on %s", listenPortSpec)
