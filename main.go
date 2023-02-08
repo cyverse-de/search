@@ -82,10 +82,12 @@ func main() {
 
 	// Check in a goroutine so the service can start up & respond to health checks sooner
 	go func(e *elasticsearch.Elasticer) {
+		log.Info("Setting up Elasticsearch connection")
 		err := e.Setup()
 		if err != nil {
 			log.Fatal(err)
 		}
+		log.Info("Elasticsearch is ready")
 	}(e)
 
 	r := newRouter(e)
