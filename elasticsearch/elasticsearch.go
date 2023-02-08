@@ -12,47 +12,67 @@ import (
 
 // Elasticer is a type used to interact with Elasticsearch
 type Elasticer struct {
-	es      *elastic.Client
-	baseURL string
-	index   string
+	es       *elastic.Client
+	baseURL  string
+	index    string
+	user     string
+	password string
+
+	Ready bool
 }
 
 var httpClient = http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 
-// NewElasticer returns a pointer to an Elasticer instance that has already tested its connection
-// by making a WaitForStatus call to the configured Elasticsearch cluster
-func NewElasticer(elasticsearchBase string, user string, password string, elasticsearchIndex string) (*Elasticer, error) {
+// NewElasticer returns a pointer to an Elasticer instance that needs to be set up with Setup()
+func NewElasticer(elasticsearchBase string, user string, password string, elasticsearchIndex string) *Elasticer {
+	return &Elasticer{es: nil, baseURL: elasticsearchBase, index: elasticsearchIndex, user: user, password: password, Ready: false}
+}
+
+// Setup sets up the elasticsearch client and checks that the connection is
+// good by making a WaitForStatus call to the configured Elasticsearch cluster
+func (e *Elasticer) Setup() error {
 	c, err := elastic.NewClient(
 		elastic.SetSniff(false),
-		elastic.SetURL(elasticsearchBase),
-		elastic.SetBasicAuth(user, password),
-		elastic.SetHealthcheckTimeoutStartup(30*time.Second),
+		elastic.SetURL(e.baseURL),
+		elastic.SetBasicAuth(e.user, e.password),
+		elastic.SetHealthcheckTimeoutStartup(60*time.Second),
 		elastic.SetHttpClient(&httpClient))
 
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to create elastic client")
+		return errors.Wrap(err, "Failed to create elastic client")
 	}
+	e.es = c
 
 	wait := "90s"
-	err = c.WaitForYellowStatus(wait)
+	err = e.es.WaitForYellowStatus(wait)
 	if err != nil {
-		return nil, errors.Wrapf(err, "Cluster did not report yellow or better status within %s", wait)
+		return errors.Wrapf(err, "Cluster did not report yellow or better status within %s", wait)
 	}
-
-	return &Elasticer{es: c, baseURL: elasticsearchBase, index: elasticsearchIndex}, nil
+	e.Ready = true
+	return nil
 }
 
 // Search returns an *elastic.SearchService set to the right index, for further use
 func (e *Elasticer) Search() *elastic.SearchService {
-	return e.es.Search().Index(e.index)
+	if e.Ready {
+		return e.es.Search().Index(e.index)
+	} else {
+		return nil
+	}
 }
 
 // Scroll returns an *elastic.ScrollService set to the right index, for further use
 func (e *Elasticer) Scroll() *elastic.ScrollService {
-	return e.es.Scroll().Index(e.index)
+	if e.Ready {
+		return e.es.Scroll().Index(e.index)
+	} else {
+		return nil
+	}
 }
 
 // Close calls out to the Stop method of the underlying elastic.Client
 func (e *Elasticer) Close() {
-	e.es.Stop()
+	if e.es != nil {
+		e.es.Stop()
+	}
 }

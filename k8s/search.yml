@@ -84,7 +84,7 @@ spec:
           periodSeconds: 5
         readinessProbe:
           httpGet:
-            path: /debug/vars
+            path: /ready
             port: 60000
           initialDelaySeconds: 5
           periodSeconds: 5
