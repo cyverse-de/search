@@ -33,7 +33,7 @@ func NewElasticer(elasticsearchBase string, user string, password string, elasti
 		return nil, errors.Wrap(err, "Failed to create elastic client")
 	}
 
-	return &Elasticer{es: c, baseURL: elasticsearchBase, index: elasticsearchIndex}, nil
+	return &Elasticer{es: c, baseURL: elasticsearchBase, index: elasticsearchIndex, ready: false}, nil
 }
 
 // Check checks that the connection is good by making a WaitForStatus call to
@@ -44,6 +44,7 @@ func (e *Elasticer) Check() error {
 	if err != nil {
 		return errors.Wrapf(err, "Cluster did not report yellow or better status within %s", wait)
 	}
+	e.ready = true
 	return nil
 }
 
