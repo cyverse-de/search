@@ -45,10 +45,24 @@ func loadConfig(cfgPath string) {
 	}
 }
 
+//nolint
+func GetElasticsearchReadyHandler(e *elasticsearch.Elasticer) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if e.Ready {
+			w.WriteHeader(200)
+			w.Write([]byte("ready"))
+		} else {
+			w.WriteHeader(500)
+			w.Write([]byte("not ready"))
+		}
+	}
+}
+
 func newRouter(e *elasticsearch.Elasticer) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(otelmux.Middleware(serviceName))
 	r.Handle("/debug/vars", http.DefaultServeMux)
+	r.HandleFunc("/ready", GetElasticsearchReadyHandler(e))
 	data.RegisterRoutes(r.PathPrefix("/data/").Subrouter(), cfg, e, log)
 
 	return r
@@ -63,15 +77,12 @@ func main() {
 	defer shutdown()
 
 	loadConfig(*cfgPath)
-	e, err := elasticsearch.NewElasticer(cfg.GetString("elasticsearch.base"), cfg.GetString("elasticsearch.user"), cfg.GetString("elasticsearch.password"), cfg.GetString("elasticsearch.index"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	e := elasticsearch.NewElasticer(cfg.GetString("elasticsearch.base"), cfg.GetString("elasticsearch.user"), cfg.GetString("elasticsearch.password"), cfg.GetString("elasticsearch.index"))
 	defer e.Close()
 
 	// Check in a goroutine so the service can start up & respond to health checks sooner
 	go func(e *elasticsearch.Elasticer) {
-		err := e.Check()
+		err := e.Setup()
 		if err != nil {
 			log.Fatal(err)
 		}
