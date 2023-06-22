@@ -11,7 +11,7 @@ import (
 	basetag "github.com/cyverse-de/querydsl/clause/tag"
 	"github.com/cyverse-de/search/elasticsearch"
 	"github.com/mitchellh/mapstructure"
-	"gopkg.in/olivere/elastic.v5"
+	"github.com/olivere/elastic/v7"
 )
 
 const (
@@ -74,7 +74,7 @@ func TagProcessor(ctx context.Context, args map[string]interface{}) (elastic.Que
 		return nil, err
 	}
 
-	if int64(len(realArgs.Tags)) != res.Hits.TotalHits {
+	if int64(len(realArgs.Tags)) != res.TotalHits() {
 		return nil, fmt.Errorf("When querying for tags, got %d rather than the full number passed, %d", res.Hits.TotalHits, len(realArgs.Tags))
 	}
 

@@ -26,7 +26,7 @@ import (
 	"github.com/cyverse-de/search/clause/tag"
 
 	"github.com/cyverse-de/search/elasticsearch"
-	"gopkg.in/olivere/elastic.v5"
+	"github.com/olivere/elastic/v7"
 )
 
 var httpClient = http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
