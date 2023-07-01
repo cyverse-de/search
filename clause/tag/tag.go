@@ -69,13 +69,13 @@ func TagProcessor(ctx context.Context, args map[string]interface{}) (elastic.Que
 
 	query := elastic.NewBoolQuery().Must(elastic.NewTermsQuery("id", tags...)).Filter(elastic.NewTermQuery("creator", user))
 
-	res, err := es.Search().Type("tag").Size(0).Query(query).Do(ctx)
+	res, err := es.Search().Size(0).Query(query).Do(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	if int64(len(realArgs.Tags)) != res.TotalHits() {
-		return nil, fmt.Errorf("When querying for tags, got %d rather than the full number passed, %d", res.Hits.TotalHits, len(realArgs.Tags))
+		return nil, fmt.Errorf("When querying for tags, got %d rather than the full number passed, %d", res.TotalHits(), len(realArgs.Tags))
 	}
 
 	return basetag.TagProcessor(ctx, args)
