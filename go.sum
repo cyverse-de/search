@@ -7,6 +7,8 @@ github.com/cyverse-de/configurate v0.0.0-20171005230251-9b512d37328e h1:h6okcwNg
 github.com/cyverse-de/configurate v0.0.0-20171005230251-9b512d37328e/go.mod h1:QMZ4G8bX5f0vKiH9+/2JqV687mN1byJ18tjZwIJIagI=
 github.com/cyverse-de/go-mod/otelutils v0.0.2 h1:7O3jWQgf+PIIACSwtQM5SNtn6xTxxaLIUW6kjEKUpHM=
 github.com/cyverse-de/go-mod/otelutils v0.0.2/go.mod h1:8P2jRGnvUsH4qtyVP0W6KiV5iSr102pLkzKFgkYJ4og=
+github.com/cyverse-de/querydsl/v2 v2.0.0 h1:8rOmLa39sKeHcBeBZYIE1Ie6s4/fGrXDgk00W6eMaJw=
+github.com/cyverse-de/querydsl/v2 v2.0.0/go.mod h1:l3yx20creZRULVb+NkLlI9S45QhwGU7/82+auvPW6U4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
