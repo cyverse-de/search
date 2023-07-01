@@ -2,12 +2,12 @@ module github.com/cyverse-de/search
 
 go 1.16
 
-replace github.com/cyverse-de/querydsl => ../querydsl
+replace github.com/cyverse-de/querydsl/v2 => ../querydsl
 
 require (
 	github.com/cyverse-de/configurate v0.0.0-20171005230251-9b512d37328e
 	github.com/cyverse-de/go-mod/otelutils v0.0.2
-	github.com/cyverse-de/querydsl v0.0.0-20190124215511-d0881ab0f52c
+	github.com/cyverse-de/querydsl/v2 v2.0.0-00010101000000-000000000000
 	github.com/fsnotify/fsnotify v1.4.3-0.20170329110642-4da3e2cfbabc // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/hcl v0.0.0-20171017181929-23c074d0eceb // indirect

@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/cyverse-de/querydsl"
-	"github.com/cyverse-de/querydsl/clause"
-	basetag "github.com/cyverse-de/querydsl/clause/tag"
+	"github.com/cyverse-de/querydsl/v2"
+	"github.com/cyverse-de/querydsl/v2/clause"
+	basetag "github.com/cyverse-de/querydsl/v2/clause/tag"
 	"github.com/cyverse-de/search/elasticsearch"
 	"github.com/mitchellh/mapstructure"
 	"github.com/olivere/elastic/v7"
