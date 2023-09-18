@@ -6,12 +6,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/cyverse-de/querydsl"
-	"github.com/cyverse-de/querydsl/clause"
-	basetag "github.com/cyverse-de/querydsl/clause/tag"
+	"github.com/cyverse-de/querydsl/v2"
+	"github.com/cyverse-de/querydsl/v2/clause"
+	basetag "github.com/cyverse-de/querydsl/v2/clause/tag"
 	"github.com/cyverse-de/search/elasticsearch"
 	"github.com/mitchellh/mapstructure"
-	"gopkg.in/olivere/elastic.v5"
+	"github.com/olivere/elastic/v7"
 )
 
 const (
@@ -69,13 +69,13 @@ func TagProcessor(ctx context.Context, args map[string]interface{}) (elastic.Que
 
 	query := elastic.NewBoolQuery().Must(elastic.NewTermsQuery("id", tags...)).Filter(elastic.NewTermQuery("creator", user))
 
-	res, err := es.Search().Type("tag").Size(0).Query(query).Do(ctx)
+	res, err := es.Search().Size(0).Query(query).Do(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	if int64(len(realArgs.Tags)) != res.Hits.TotalHits {
-		return nil, fmt.Errorf("When querying for tags, got %d rather than the full number passed, %d", res.Hits.TotalHits, len(realArgs.Tags))
+	if int64(len(realArgs.Tags)) != res.TotalHits() {
+		return nil, fmt.Errorf("When querying for tags, got %d rather than the full number passed, %d", res.TotalHits(), len(realArgs.Tags))
 	}
 
 	return basetag.TagProcessor(ctx, args)

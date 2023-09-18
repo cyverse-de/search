@@ -2,12 +2,13 @@
 package elasticsearch
 
 import (
+	"crypto/tls"
 	"net/http"
 	"time"
 
+	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"gopkg.in/olivere/elastic.v5"
 )
 
 // Elasticer is a type used to interact with Elasticsearch
@@ -21,7 +22,7 @@ type Elasticer struct {
 	Ready bool
 }
 
-var httpClient = http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
+var httpClient = http.Client{Transport: otelhttp.NewTransport(&http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}})}
 
 // NewElasticer returns a pointer to an Elasticer instance that needs to be set up with Setup()
 func NewElasticer(elasticsearchBase string, user string, password string, elasticsearchIndex string) *Elasticer {

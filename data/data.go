@@ -14,19 +14,19 @@ import (
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
-	"github.com/cyverse-de/querydsl"
-	"github.com/cyverse-de/querydsl/clause/created"
-	"github.com/cyverse-de/querydsl/clause/label"
-	"github.com/cyverse-de/querydsl/clause/metadata"
-	"github.com/cyverse-de/querydsl/clause/modified"
-	"github.com/cyverse-de/querydsl/clause/owner"
-	"github.com/cyverse-de/querydsl/clause/path"
-	"github.com/cyverse-de/querydsl/clause/permissions"
-	"github.com/cyverse-de/querydsl/clause/size"
+	"github.com/cyverse-de/querydsl/v2"
+	"github.com/cyverse-de/querydsl/v2/clause/created"
+	"github.com/cyverse-de/querydsl/v2/clause/label"
+	"github.com/cyverse-de/querydsl/v2/clause/metadata"
+	"github.com/cyverse-de/querydsl/v2/clause/modified"
+	"github.com/cyverse-de/querydsl/v2/clause/owner"
+	"github.com/cyverse-de/querydsl/v2/clause/path"
+	"github.com/cyverse-de/querydsl/v2/clause/permissions"
+	"github.com/cyverse-de/querydsl/v2/clause/size"
 	"github.com/cyverse-de/search/clause/tag"
 
 	"github.com/cyverse-de/search/elasticsearch"
-	"gopkg.in/olivere/elastic.v5"
+	"github.com/olivere/elastic/v7"
 )
 
 var httpClient = http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
