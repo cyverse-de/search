@@ -74,6 +74,28 @@ func GetAllDocumentationHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(docs) // nolint:errcheck
 }
 
+func (r *QueryResponder) Warn(args ...interface{}) {
+	r.log.Warn(args...)
+}
+
+func (r *QueryResponder) Info(args ...interface{}) {
+	r.log.Info(args...)
+}
+
+func (r *QueryResponder) LogQuery(query elastic.Query) {
+	src, err := query.Source()
+	if err != nil {
+		r.Warn("unable to log query: ", err)
+		return
+	}
+	bytes, err := json.Marshal(src)
+	if err != nil {
+		r.Warn("unable to log query: ", err)
+		return
+	}
+	r.Info("query: ", string(bytes))
+}
+
 func (r *QueryResponder) logAndOutputString(err string) {
 	r.log.Error(err)
 	// nolint:errcheck
@@ -301,6 +323,7 @@ func GetSearchHandler(cfg *viper.Viper, e *elasticsearch.Elasticer, log *logrus.
 			hr.logAndOutputErr(err)
 			return
 		}
+		hr.LogQuery(translated)
 		source, err := hr.buildSearchSource(users, sorts)
 		if err != nil {
 			return
