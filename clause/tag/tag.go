@@ -45,13 +45,13 @@ var (
 func TagProcessor(ctx context.Context, args map[string]interface{}) (elastic.Query, error) {
 	user, es, ok := UserElasticFromContext(ctx)
 	if !ok {
-		return nil, errors.New("Couldn't turn user into a string, or couldn't make elasticsearch connection into a real object")
+		return nil, errors.New("couldn't turn user into a string, or couldn't make elasticsearch connection into a real object")
 	}
 	if user == "" {
-		return nil, errors.New("No user was passed in the context")
+		return nil, errors.New("no user was passed in the context")
 	}
 	if es == nil {
-		return nil, errors.New("No elasticsearch connection was passed in the context")
+		return nil, errors.New("no elasticsearch connection was passed in the context")
 	}
 
 	var realArgs basetag.TagArgs
@@ -75,7 +75,7 @@ func TagProcessor(ctx context.Context, args map[string]interface{}) (elastic.Que
 	}
 
 	if int64(len(realArgs.Tags)) != res.TotalHits() {
-		return nil, fmt.Errorf("When querying for tags, got %d rather than the full number passed, %d", res.TotalHits(), len(realArgs.Tags))
+		return nil, fmt.Errorf("when querying for tags, got %d rather than the full number passed, %d", res.TotalHits(), len(realArgs.Tags))
 	}
 
 	return basetag.TagProcessor(ctx, args)
