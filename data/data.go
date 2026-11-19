@@ -128,7 +128,7 @@ func (r *QueryResponder) getUserGroups() ([]string, *http.Response, error) {
 	if resp.StatusCode != 200 {
 		return nil, resp, nil
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var decoded struct {
 		User   string
@@ -272,7 +272,7 @@ func GetSearchHandler(cfg *viper.Viper, e *elasticsearch.Elasticer, log *logrus.
 		}
 		if ur != nil {
 			// passing along the response
-			defer ur.Body.Close()
+			defer func() { _ = ur.Body.Close() }()
 			hr.writer.WriteHeader(ur.StatusCode)
 			io.Copy(w, ur.Body) // nolint:errcheck
 			return

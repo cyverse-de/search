@@ -43,16 +43,16 @@ func extractSort(v map[string]interface{}) ([]elastic.SortInfo, error) {
 		var asc bool
 
 		if knownFields[sort.Field] == "" {
-			return nil, fmt.Errorf("Unknown field type %q", sort.Field)
+			return nil, fmt.Errorf("unknown field type %q", sort.Field)
 		}
 
-		if sort.Order == "ascending" {
+		switch sort.Order {
+		case "ascending":
 			asc = true
-		} else if sort.Order == "descending" {
+		case "descending":
 			asc = false
-
-		} else {
-			return nil, fmt.Errorf("Order of %q was neither ascending nor descending", sort.Order)
+		default:
+			return nil, fmt.Errorf("order of %q was neither ascending nor descending", sort.Order)
 		}
 
 		ret = append(ret, elastic.SortInfo{Ascending: asc, Field: knownFields[sort.Field]})
